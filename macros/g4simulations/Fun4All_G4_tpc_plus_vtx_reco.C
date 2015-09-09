@@ -36,10 +36,12 @@ int Fun4All_G4_tpc_plus_vtx_reco(
 	// G4Setup(absorberactive, magfield);
 	
 	
-	PHG4HoughTransform* hough = new PHG4HoughTransform(62,62);
-	hough->set_use_vertex(false);
+	PHG4HoughTransform* hough = new PHG4HoughTransform(62,42);
+	hough->set_use_vertex(true);
 	hough->setRemoveHits(true);
 	hough->set_min_pT(0.2);
+	hough->set_chi2_cut_full( 3.0 );
+	hough->set_chi2_cut_init( 3.0 );
 
 	hough->setBinScale(0.9);
 	hough->setZBinScale(0.9);
@@ -74,6 +76,9 @@ int Fun4All_G4_tpc_plus_vtx_reco(
 	Fun4AllInputManager *in = new Fun4AllDstInputManager( "DSTIN");
   	se->registerInputManager( in );
   	se->fileopen( in->Name(), inputfile );
+
+  	Fun4AllDstOutputManager *out = new Fun4AllDstOutputManager("DSTOUT", outputfile);
+  	se->registerOutputManager(out);
 	
 	se->run(nEvents);
 	

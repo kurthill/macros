@@ -11,8 +11,8 @@ int Fun4All_G4_hijing_TPC_detector(
 )
 {
   char inputFile[500];
-  sprintf(inputFile,"/direct/phenix+hhj/frawley/simulation/sHijing/sHijing-11-13fm.dat");
-  // sprintf(inputFile,"/direct/phenix+hhj/frawley/simulation/sHijing/sHijing-0-4fm_%i.dat",process);
+  // sprintf(inputFile,"/direct/phenix+hhj/frawley/simulation/sHijing/sHijing-11-13fm.dat");
+  sprintf(inputFile,"/direct/phenix+hhj/frawley/simulation/sHijing/sHijing-0-4fm_%i.dat",process);
   cout << "Using sHijing file " << inputFile << endl;
   
   
@@ -72,7 +72,7 @@ int Fun4All_G4_hijing_TPC_detector(
   }
   for(i=2;i<62;++i)
   {
-    digi->set_adc_scale(i, 10000, 1.0e0);
+    digi->set_adc_scale(i, 10000, 1.0e-1);
   }
   se->registerSubsystem( digi );
   
@@ -82,7 +82,7 @@ int Fun4All_G4_hijing_TPC_detector(
   
   PHG4SvtxThresholds* thresholds = new PHG4SvtxThresholds();
   thresholds->Verbosity(0);
-  thresholds->set_threshold(0.0);
+  thresholds->set_threshold(1.0e-6);
   thresholds->set_use_thickness_mip(0, true);
   se->registerSubsystem( thresholds );
   
