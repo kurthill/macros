@@ -13,6 +13,11 @@ double tpc_cell_x = 0.12;
 // eventually this will be replaced with an actual simulation of timing amplitude.
 double tpc_cell_y = 0.17;
 
+int n_svx_layer = 2;
+double vtx_cell_x[2] = {0.005, 0.005};
+double vtx_cell_y[2] = {0.0425, 0.0425};
+
+
 int Fun4All_G4_tpc_plus_vtx_Ups(
 	int istate
 )
@@ -51,7 +56,7 @@ int Fun4All_G4_tpc_plus_vtx_Ups(
 	if(istate==1)
 	{
 		// Upsilon(1S)
-		// nEvents = 20;
+		// nEvents = 200;
 		nEvents = 8770;
 		gen->set_mass(9.46);
 		gen->set_width(54.02e-6);
@@ -79,18 +84,17 @@ int Fun4All_G4_tpc_plus_vtx_Ups(
 	// ****************************************************************
 	// SVX_CELL
 	
-	double vtx_cell_x = 0.005;
-	double vtx_cell_y = 0.0425;
+	
 	
   PHG4CylinderCellTPCReco *svtx_cells = new PHG4CylinderCellTPCReco();
   svtx_cells->setDiffusion(diffusion);
   svtx_cells->setElectronsPerKeV(electrons_per_kev);
 	svtx_cells->Detector("SVTX");
-	for(int i=0;i<2;++i)
+	for(int i=0;i<n_svx_layer;++i)
 	{
-		svtx_cells->cellsize(i, vtx_cell_x, vtx_cell_y);
+		svtx_cells->cellsize(i, vtx_cell_x[i], vtx_cell_y[i]);
 	}
-	for(int i=2;i<62;++i)
+	for(int i=n_svx_layer;i<62;++i)
 	{
 		svtx_cells->cellsize(i, tpc_cell_x, tpc_cell_y);
 	}
@@ -129,7 +133,7 @@ int Fun4All_G4_tpc_plus_vtx_Ups(
   PHG4TPCClusterizer* clusterizer = new PHG4TPCClusterizer;
   se->registerSubsystem( clusterizer );
 
-  PHG4HoughTransform* hough = new PHG4HoughTransform(62,62);
+  PHG4HoughTransform* hough = new PHG4HoughTransform(62,58);
 	hough->set_use_vertex(false);
 	hough->setRemoveHits(true);
 	hough->set_min_pT(0.2);
@@ -137,14 +141,16 @@ int Fun4All_G4_tpc_plus_vtx_Ups(
 	hough->setBinScale(0.9);
 	hough->setZBinScale(0.9);
 	
-	hough->Verbosity(0);
-  double mat_scale = 1.0;
-  hough->set_material(0, mat_scale*0.013);
-  hough->set_material(1, mat_scale*0.013);
-  hough->set_material(2, mat_scale*0.01);
-	for(int i=3;i<62;++i)
+	hough->Verbosity(10);
+	for(int i=0;i<n_svx_layer;++i)
 	{
-    hough->set_material(i, mat_scale*0.06/60.);
+		hough->set_material(0, 0.013);
+		hough->set_material(1, 0.013);
+	}
+	hough->set_material(n_svx_layer, 0.01);
+	for(int i=n_svx_layer+1;i<62;++i)
+	{
+    hough->set_material(i, 0.06/60.);
 	}
 	hough->setUseCellSize(true);
 	
