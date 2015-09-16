@@ -4,6 +4,20 @@ int Min_si_layer = -1;
 int Max_si_layer = -1;
 int Cemc_slats_per_cell = 72; // make it 2*2*2*3*3 so we can try other combinations
 
+double inner_cage_radius = 0.;
+double diffusion = 0.0057;
+double electrons_per_kev = 38.;
+
+// tpc_cell_x is the TPC pad size.  The actual hit resolution depends not only on this pad size but also on the diffusion in the gas and amplification step
+double tpc_cell_x = 0.12;
+// tpc_cell_y is the z "bin" size.  It is approximately the z resolution * sqrt(12)
+// eventually this will be replaced with an actual simulation of timing amplitude.
+double tpc_cell_y = 0.17;
+
+int n_svx_layer = 2;
+double vtx_cell_x[2] = {0.005, 0.005};
+double vtx_cell_y[2] = {0.0425, 0.0425};
+
 int Fun4All_G4_hijing_TPC_detector(
   int nEvents,
   int process,
@@ -11,8 +25,8 @@ int Fun4All_G4_hijing_TPC_detector(
 )
 {
   char inputFile[500];
-  // sprintf(inputFile,"/direct/phenix+hhj/frawley/simulation/sHijing/sHijing-11-13fm.dat");
-  sprintf(inputFile,"/direct/phenix+hhj/frawley/simulation/sHijing/sHijing-0-4fm_%i.dat",process);
+  sprintf(inputFile,"/direct/phenix+hhj/frawley/simulation/sHijing/sHijing-11-13fm.dat");
+  // sprintf(inputFile,"/direct/phenix+hhj/frawley/simulation/sHijing/sHijing-0-4fm_%i.dat",process);
   cout << "Using sHijing file " << inputFile << endl;
   
   
@@ -45,32 +59,29 @@ int Fun4All_G4_hijing_TPC_detector(
   // ************************************
   // make "cells", digitize and clusterize
   
-  double vtx_cell_x = 0.005;
-  double vtx_cell_y = 0.0425;
   
-  double tpc_cell_x = 0.12;
-  double tpc_cell_y = 0.17;
-  
-  PHG4CylinderCellTPCReco *svtx_cells = new PHG4CylinderCellTPCReco();
-  svtx_cells->Detector("SVTX");
-  for(int i=0;i<2;++i)
-  {
-    svtx_cells->cellsize(i, vtx_cell_x, vtx_cell_y);
-  }
-  for(int i=2;i<62;++i)
-  {
-    svtx_cells->cellsize(i, tpc_cell_x, tpc_cell_y);
-  }
-  
-  se->registerSubsystem(svtx_cells);
+    PHG4CylinderCellTPCReco *svtx_cells = new PHG4CylinderCellTPCReco();
+    svtx_cells->setDiffusion(diffusion);
+    svtx_cells->setElectronsPerKeV(electrons_per_kev);
+    svtx_cells->Detector("SVTX");
+    for(int i=0;i<n_svx_layer;++i)
+    {
+      svtx_cells->cellsize(i, vtx_cell_x[i], vtx_cell_y[i]);
+    }
+    for(int i=n_svx_layer;i<62;++i)
+    {
+      svtx_cells->cellsize(i, tpc_cell_x, tpc_cell_y);
+    }
+    
+    se->registerSubsystem(svtx_cells);
   
   PHG4SvtxDigitizer* digi = new PHG4SvtxDigitizer();
   digi->Verbosity(0);
-  for(i=0;i<2;++i)
+  for(i=0;i<n_svx_layer;++i)
   {
     digi->set_adc_scale(i, 255, 1.0e-6);
   }
-  for(i=2;i<62;++i)
+  for(i=n_svx_layer;i<62;++i)
   {
     digi->set_adc_scale(i, 10000, 1.0e-1);
   }
@@ -103,11 +114,11 @@ int Fun4All_G4_hijing_TPC_detector(
   // ************************************
   
   
-  stringstream ss;ss.clear();ss.str("");ss<<"g4_eval_hits"<<".root";
-  
-  SubsysReco* eval = new PHG4Evaluator("PHG4EVALUATOR", ss.str().c_str());
-  eval->Verbosity(0);
-  se->registerSubsystem( eval );
+  // stringstream ss;ss.clear();ss.str("");ss<<"g4_eval_hits"<<".root";
+  // 
+  // SubsysReco* eval = new PHG4Evaluator("PHG4EVALUATOR", ss.str().c_str());
+  // eval->Verbosity(0);
+  // se->registerSubsystem( eval );
   
   
   // ************************************

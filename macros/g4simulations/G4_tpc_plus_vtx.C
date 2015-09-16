@@ -2,7 +2,7 @@
 // with what is used in this macro
 Min_si_layer = 0;
 Max_si_layer = 62;
-inner_cage_radius = 30.;
+double inner_cage_radius = 30.;
 string tpcgas = "G4_Ar";
 double vtx_radius[2] = { 2.71, 4.63 };
 double vtx_length[2] = { 20., 20. };
