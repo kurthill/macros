@@ -109,11 +109,11 @@ int Fun4All_G4_tpc_plus_vtx_Ups(
   
   PHG4SvtxDigitizer* digi = new PHG4SvtxDigitizer();
   digi->Verbosity(0);
-  for(i=0;i<2;++i)
+  for(i=0;i<n_svx_layer;++i)
   {
     digi->set_adc_scale(i, 255, 1.0e-6);
   }
-  for(i=2;i<62;++i)
+  for(i=n_svx_layer;i<62;++i)
   {
     digi->set_adc_scale(i, 10000, 1.0e0);
   }
