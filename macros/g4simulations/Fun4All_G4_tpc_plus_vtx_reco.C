@@ -36,7 +36,7 @@ int Fun4All_G4_tpc_plus_vtx_reco(
 	// G4Setup(absorberactive, magfield);
 	
 	
-	PHG4HoughTransform* hough = new PHG4HoughTransform(62,58);
+	PHG4HoughTransformTPC* hough = new PHG4HoughTransformTPC(62,58);
 	hough->set_use_vertex(true);
 	hough->setRemoveHits(true);
 	hough->set_min_pT(0.2);
@@ -73,9 +73,9 @@ int Fun4All_G4_tpc_plus_vtx_reco(
 	stringstream ss;ss.clear();ss.str("");ss<<"g4_eval_"<<job_id<<".root";
 	
 
-	// SubsysReco* eval = new SvtxEvaluator("SVTXEVALUATOR", ss.str().c_str());
-	//   eval->Verbosity(100);
-	//   se->registerSubsystem( eval );
+	SubsysReco* eval = new SvtxEvaluator("SVTXEVALUATOR", ss.str().c_str());
+	  eval->Verbosity(100);
+	  se->registerSubsystem( eval );
 
 
 	Fun4AllInputManager *in = new Fun4AllDstInputManager( "DSTIN");
