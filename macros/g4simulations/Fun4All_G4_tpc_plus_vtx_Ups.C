@@ -71,7 +71,7 @@ int Fun4All_G4_tpc_plus_vtx_Ups(
 	else
 	{
 		// Upsilon(3S)
-		nEvents = 1155;
+		nEvents = 10;
 		gen->set_mass(10.3552);
 		gen->set_width(20.32e-6);
 	}
@@ -169,7 +169,7 @@ int Fun4All_G4_tpc_plus_vtx_Ups(
 	
 	// ****************************************************************
 	
-	// stringstream ss;ss.clear();ss.str("");ss<<"g4_eval_ups_"<<istate<<".root";
+	stringstream ss;ss.clear();ss.str("");ss<<"g4_eval_ups_"<<istate<<".root";
 	
 	// SubsysReco* eval = new SvtxEvaluator("SvtxEvaluator", ss.str().c_str());
 	//   eval->Verbosity(100);
@@ -178,7 +178,11 @@ int Fun4All_G4_tpc_plus_vtx_Ups(
 	Fun4AllInputManager *in = new Fun4AllDummyInputManager( "JADE");
 	se->registerInputManager( in );
 
-	
+	ss.clear();ss.str("");ss<<"G4_upsilons_"<<istate<<".root";
+	Fun4AllDstOutputManager *out = new Fun4AllDstOutputManager("DSTOUT", ss.str().c_str());
+	se->registerOutputManager(out);
+
+
 	se->run(nEvents);
 	
 	se->End();
