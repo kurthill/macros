@@ -115,7 +115,7 @@ int Fun4All_G4_tpc_plus_vtx_Ups(
   }
   for(i=n_svx_layer;i<62;++i)
   {
-    digi->set_adc_scale(i, 10000, 1.0e0);
+    digi->set_adc_scale(i, 10000, 1.0e-1);
   }
   se->registerSubsystem( digi );
 	
@@ -133,26 +133,35 @@ int Fun4All_G4_tpc_plus_vtx_Ups(
   PHG4TPCClusterizer* clusterizer = new PHG4TPCClusterizer;
   se->registerSubsystem( clusterizer );
 
-  PHG4HoughTransform* hough = new PHG4HoughTransform(62,58);
-	hough->set_use_vertex(false);
-	hough->setRemoveHits(true);
-	hough->set_min_pT(0.2);
-	
-	hough->setBinScale(0.9);
-	hough->setZBinScale(0.9);
-	
-	hough->Verbosity(10);
-	for(int i=0;i<n_svx_layer;++i)
-	{
-		hough->set_material(0, 0.013);
-		hough->set_material(1, 0.013);
-	}
-	hough->set_material(n_svx_layer, 0.01);
-	for(int i=n_svx_layer+1;i<62;++i)
-	{
-    hough->set_material(i, 0.06/60.);
-	}
-	hough->setUseCellSize(true);
+  	PHG4HoughTransformTPC* hough = new PHG4HoughTransformTPC(62,58);
+  	hough->set_use_vertex(true);
+  	hough->setRemoveHits(true);
+  	hough->set_min_pT(0.2);
+  	hough->set_chi2_cut_full( 3.0 );
+  	hough->set_chi2_cut_init( 3.0 );
+
+  	hough->setBinScale(0.9);
+  	hough->setZBinScale(0.9);
+
+  	hough->Verbosity(10);
+  	double mat_scale = 1.0;
+  	hough->set_material(0, mat_scale*0.013);
+  	hough->set_material(1, mat_scale*0.013);
+  	hough->set_material(2, mat_scale*0.01);
+  	for(int i=3;i<62;++i)
+  	{
+  		hough->set_material(i, mat_scale*0.06/60.);
+  	}
+  	hough->setUseCellSize(false);
+    
+    for(int i=2;i<62;++i)
+    {
+      hough->setFitErrorScale(i, 1./sqrt(12.));
+    }
+    for(int i=2;i<62;++i)
+    {
+      hough->setVoteErrorScale(i, 0.1);
+    }
 	
   
 	
@@ -160,11 +169,11 @@ int Fun4All_G4_tpc_plus_vtx_Ups(
 	
 	// ****************************************************************
 	
-	stringstream ss;ss.clear();ss.str("");ss<<"g4_eval_ups_"<<istate<<".root";
+	// stringstream ss;ss.clear();ss.str("");ss<<"g4_eval_ups_"<<istate<<".root";
 	
-	SubsysReco* eval = new PHG4Evaluator("PHG4EVALUATOR", ss.str().c_str());
-	eval->Verbosity(0);
-	se->registerSubsystem( eval );
+	// SubsysReco* eval = new SvtxEvaluator("SvtxEvaluator", ss.str().c_str());
+	//   eval->Verbosity(100);
+	//   se->registerSubsystem( eval );
 	
 	Fun4AllInputManager *in = new Fun4AllDummyInputManager( "JADE");
 	se->registerInputManager( in );
