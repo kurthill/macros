@@ -71,7 +71,7 @@ int Fun4All_G4_tpc_plus_vtx_Ups(
 	else
 	{
 		// Upsilon(3S)
-		nEvents = 10;
+		nEvents = 1155;
 		gen->set_mass(10.3552);
 		gen->set_width(20.32e-6);
 	}
