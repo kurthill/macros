@@ -19,13 +19,12 @@ double vtx_cell_x[2] = {0.005, 0.005};
 double vtx_cell_y[2] = {0.0425, 0.0425};
 
 int Fun4All_G4_tpc_hijing_full(
-  int nEvents,
-  int process
+  int nEvents=1
 )
 {
   char inputFile[500];
-  // sprintf(inputFile,"/direct/phenix+hhj/frawley/simulation/sHijing/sHijing-11-13fm.dat");
- sprintf(inputFile,"/direct/phenix+hhj/frawley/simulation/sHijing/sHijing-0-4fm_%i.dat",process);
+  sprintf(inputFile,"/direct/phenix+hhj/frawley/simulation/sHijing/sHijing-11-13fm.dat");
+ // sprintf(inputFile,"/direct/phenix+hhj/frawley/simulation/sHijing/sHijing-0-4fm_%i.dat",process);
   cout << "Using sHijing file " << inputFile << endl;
   
   
@@ -128,7 +127,7 @@ int Fun4All_G4_tpc_hijing_full(
 
   se->registerSubsystem( hough );
 
-    stringstream ss;ss.clear();ss.str("");ss<<"hij_eval_"<<process<<".root";
+    stringstream ss;ss.clear();ss.str("");ss<<"hij_eval_.root";
     
 
   SvtxEvaluator* eval = new SvtxEvaluator("SVTXEVALUATOR", ss.str().c_str());
